@@ -22,14 +22,14 @@ app.use(cookieParse)
 // REGISTRO
 app.post('/api/signup', async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
-    // const exist = await User.findOne({
-    //     where: { email },
-    // });
+    const exist = await User.findOne({
+        where: { email },
+    });
 
-    // if (exist.dataValues.email === email) {
-    //     return res.json('El correo proporcionado ya esta en uso')
-    // } else {
-    // }
+    if (exist.dataValues.email === email) {
+        return res.json('El correo proporcionado ya esta en uso')
+    } else {
+    }
     const encripted = await bcrypt.hash(password, 10)
     const user = await createUser({ firstName, lastName, email, password: encripted })
     return res.status(200).json(user);
