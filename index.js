@@ -11,10 +11,11 @@ const User = require('./src/models/User.model');
 const sequelize = require('./src/config/db.config')
 const verifyAccesApi = require('./src/middleware/verifyToken');
 const { createBootcamp, addUser, findById, findAllBootcamps } = require('./src/controllers/bootcamp.controller');
+const cookieParse = require('./src/middleware/cookieParse');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
-// app.use(cookieParse);
+app.use(cookieParse)
 
 
 
@@ -50,9 +51,9 @@ app.post('/api/signin', async (req, res) => {
         })
     }
 
-    const token = jwt.sign({ user_id: user.id}, process.env.TOKEN_SECRET, { expiresIn: '30m', });
+    const token = jwt.sign({ user_id: user.id }, process.env.TOKEN_SECRET, { expiresIn: '30m', });
 
-    // res.cookie('token', token, { httpOnly: true, secure: true })
+    res.cookie('token', token, { httpOnly: true, secure: true })
 
     res.status(200).json({ token });
 })
@@ -107,7 +108,7 @@ app.get('/api/bootcamp/:id', verifyAccesApi, async (req, res) => {
 })
 
 // LISTA TODOS LOS BOOTCAMPS
-app.get('/api/bootcamp', async (req, res) => {
+app.get('/api/bootcamp', verifyAccesApi, async (req, res) => {
     const bootcamps = await findAllBootcamps()
     res.status(200).json({ bootcamps });
 })
